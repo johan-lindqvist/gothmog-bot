@@ -23,14 +23,14 @@ public class UsersService
 	public async Task GetUsersAsync()
 	{
 		await restClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
-		var guild = await restClient.GetGuildAsync(111772771016515584, RequestOptions.Default);
+		var guild = await restClient.GetGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId, RequestOptions.Default);
 
 		var users = ImmutableList.CreateBuilder<RestGuildUser>();
 		await foreach (var userCollection in guild.GetUsersAsync())
 		{
 			foreach (var user in userCollection)
 			{
-				if (!user.RoleIds.Any(roleId => RoleConstants.AllRoles.Contains(roleId)))
+				if (!user.RoleIds.Any(roleId => DiscordConstants.AllRoles.Contains(roleId)))
 				{
 					continue;
 				}
