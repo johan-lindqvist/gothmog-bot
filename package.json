@@ -1,0 +1,19 @@
+{
+  "author": {
+    "name": "Gothmog Bot",
+    "url": "https://github.com/johan-lindqvist/gothmog-bot"
+  },
+  "cacheDirectories": [
+    "node_modules"
+  ],
+  "devDependencies": {
+    "prettier": "3.0.3"
+  },
+  "license": "",
+  "name": "gothmog-bot",
+  "private": true,
+  "repository": "https://github.com/johan-lindqvist/gothmog-bot",
+  "scripts": {
+    "prettier": "prettier -w \"**/*.{yml,yaml}\""
+  }
+}
