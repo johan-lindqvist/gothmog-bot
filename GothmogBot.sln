@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8A63CBBC-0D5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GothmogBot", "src\GothmogBot\GothmogBot.csproj", "{ECC5BF78-5BAC-4281-89CC-D777986BC1F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratzClient", "src\StratzClient\StratzClient.csproj", "{795CAF98-4196-4B87-84A9-9B23110A9F7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +22,13 @@ Global
 		{ECC5BF78-5BAC-4281-89CC-D777986BC1F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECC5BF78-5BAC-4281-89CC-D777986BC1F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECC5BF78-5BAC-4281-89CC-D777986BC1F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{795CAF98-4196-4B87-84A9-9B23110A9F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{795CAF98-4196-4B87-84A9-9B23110A9F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{795CAF98-4196-4B87-84A9-9B23110A9F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{795CAF98-4196-4B87-84A9-9B23110A9F7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{ECC5BF78-5BAC-4281-89CC-D777986BC1F8} = {8A63CBBC-0D59-4374-828D-2FC1D1EB6119}
+		{795CAF98-4196-4B87-84A9-9B23110A9F7A} = {8A63CBBC-0D59-4374-828D-2FC1D1EB6119}
 	EndGlobalSection
 EndGlobal
