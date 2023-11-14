@@ -1,0 +1,40 @@
+{
+  "extends": [
+    "github>whitesource/merge-confidence:beta",
+    ":semanticCommits",
+    ":separateMajorReleases",
+    ":combinePatchMinorReleases",
+    ":ignoreUnstable",
+    ":prNotPending",
+    ":prHourlyLimitNone",
+    ":prConcurrentLimit10",
+    ":updateNotScheduled",
+    ":maintainLockFilesDisabled",
+    ":autodetectPinVersions",
+    "group:monorepos",
+    "group:recommended"
+  ],
+  "packageRules": [
+    {
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash",
+      "platformAutomerge": true,
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+    },
+    {
+      "matchPackageNames": ["dotnet-sdk"],
+      "automerge": false
+    },
+    {
+      "matchPackageNames": ["HotChocolate", "StrawberryShake"],
+      "matchPackagePatterns": ["HotChocolate\\.", "StrawberryShake\\."],
+      "groupName": "HotChocolate packages",
+      "automerge": false,
+      "platformAutomerge": false
+    }
+  ],
+  "labels": ["dependencies"],
+  "rebaseWhen": "behind-base-branch",
+  "stabilityDays": 7
+}
