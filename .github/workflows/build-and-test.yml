@@ -12,12 +12,10 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'  # This will use the latest available .NET 7.0.x version
 
     - name: Restore Dependencies
       run: dotnet restore
