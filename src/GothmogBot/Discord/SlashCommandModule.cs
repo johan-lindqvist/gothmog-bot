@@ -23,14 +23,14 @@ public sealed class SlashCommandModule : InteractionModuleBase<SocketInteraction
 	[SlashCommand("sync-users-command", "Syncs MC users")]
 	private async Task SyncUsersAsync()
 	{
-		await RespondAsync($"Fake sync done");
+		await RespondAsync($"Fake sync done").ConfigureAwait(false);
 	}
 
 	[SlashCommand("fetch-games", "Compute the number of games played by each MC")]
 	private async Task FetchGamesAsync()
 	{
-		await dotaService.GetDotaMatchAsync(CancellationToken.None);
+		await dotaService.GetDotaMatchAsync(CancellationToken.None).ConfigureAwait(false);
 
-		await RespondAsync("Fake fetch done");
+		await RespondAsync("Fake fetch done").ConfigureAwait(false);
 	}
 }

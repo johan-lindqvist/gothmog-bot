@@ -14,6 +14,6 @@ public sealed class DotaService
 
 	public async Task GetDotaMatchAsync(CancellationToken ct)
 	{
-		var matches = await stratzClient.GetPlayerMatches.ExecuteAsync(StratzConstants.BulldogSteamId, ct);
+		var matches = await stratzClient.GetPlayerMatches.ExecuteAsync(StratzConstants.BulldogSteamId, ct).ConfigureAwait(false);
 	}
 }
