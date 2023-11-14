@@ -8,33 +8,40 @@ namespace GothmogBot.Discord;
 
 public sealed class DiscordClientRunner : IDiscordClientRunner
 {
+	private readonly DiscordSocketClient discordSocketClient;
+	private readonly DiscordRestClient discordRestClient;
+	private readonly InteractionHandler interactionHandler;
 	private readonly IOptions<DiscordOptions> discordOptions;
 
 	public DiscordClientRunner(
 		DiscordSocketClient discordSocketClient,
 		DiscordRestClient discordRestClient,
+		InteractionHandler interactionHandler,
 		IOptions<DiscordOptions> discordOptions)
 	{
+		this.discordSocketClient = discordSocketClient;
+		this.discordRestClient = discordRestClient;
+		this.interactionHandler = interactionHandler;
 		this.discordOptions = discordOptions;
-		DiscordSocketClient = discordSocketClient;
-		DiscordRestClient = discordRestClient;
 	}
-
-	public DiscordSocketClient DiscordSocketClient { get; init; }
-
-	public DiscordRestClient DiscordRestClient { get; init; }
 
 	public async Task RunAsync()
 	{
-		DiscordSocketClient.Log += DiscordLogger.LogAsync;
+		discordSocketClient.Log += DiscordLogger.LogAsync;
 
-		await DiscordSocketClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
-		await DiscordSocketClient.StartAsync();
+		Log.Information("Discord Socket Client started");
 
-		DiscordRestClient.Log += DiscordLogger.LogAsync;
+		await discordSocketClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
+		await discordSocketClient.StartAsync();
 
-		await DiscordRestClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
+		discordRestClient.Log += DiscordLogger.LogAsync;
 
-		Log.Information("Discord Bot started");
+		Log.Information("Discord Rest Client started");
+
+		await discordRestClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
+
+		await interactionHandler.InitializeAsync();
+
+		await Task.Delay(Timeout.Infinite);
 	}
 }

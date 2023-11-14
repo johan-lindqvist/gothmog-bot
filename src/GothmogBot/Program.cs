@@ -1,8 +1,10 @@
 using System.Globalization;
+using System.Reflection;
+using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
+using GothmogBot;
 using GothmogBot.Discord;
-using GothmogBot.Discord.Commands;
 using GothmogBot.Services;
 using Serilog;
 
@@ -34,14 +36,15 @@ var loggerConfiguration = new LoggerConfiguration()
 
 Log.Logger = loggerConfiguration.CreateLogger();
 
-// Add local services
-builder.Services.AddSingleton<IDiscordClientRunner, DiscordClientRunner>();
-builder.Services.AddSingleton<UsersService>();
-builder.Services.AddSingleton<SyncUsersCommand>();
-
 // Add Discord Services
 builder.Services.AddSingleton<DiscordSocketClient>();
 builder.Services.AddSingleton<DiscordRestClient>();
+
+// Add local services
+builder.Services.AddSingleton<IDiscordClientRunner, DiscordClientRunner>();
+builder.Services.AddSingleton<UsersService>();
+builder.Services.AddSingleton<InteractionService>(services => new InteractionService(services.GetRequiredService<DiscordSocketClient>()));
+builder.Services.AddSingleton<InteractionHandler>();
 
 // Build and run app
 var app = builder.Build();
@@ -50,7 +53,5 @@ var discordRunner = app.Services.GetRequiredService<IDiscordClientRunner>();
 
 var appRunTask = app.RunAsync();
 var discordRunnerTask = discordRunner.RunAsync();
-
-var usersService = app.Services.GetRequiredService<SyncUsersCommand>();
 
 await Task.WhenAll(discordRunnerTask, appRunTask).ConfigureAwait(false);
