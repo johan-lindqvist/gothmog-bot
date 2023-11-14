@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<NoWarn>8604</NoWarn> <!-- Remove when this issue is resolved and released https://github.com/ChilliCream/graphql-platform/issues/5869 -->
+
+		<StrawberryShake_LogFile>$(SolutionDir)/StrawberryShake_Debug.log</StrawberryShake_LogFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="StrawberryShake.Server" Version="13.7.0"/>
+	</ItemGroup>
+</Project>

@@ -7,7 +7,7 @@ using Serilog;
 
 namespace GothmogBot;
 
-public class InteractionHandler
+public sealed class InteractionHandler
 {
 	private readonly DiscordSocketClient client;
 	private readonly InteractionService handler;
@@ -39,7 +39,8 @@ public class InteractionHandler
 
 	private async Task ReadyAsync()
 	{
-		await handler.RegisterCommandsToGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId, true);
+		await handler.RemoveModulesFromGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId);
+		await handler.RegisterCommandsToGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId);
 	}
 
 	private async Task HandleInteraction(SocketInteraction interaction)

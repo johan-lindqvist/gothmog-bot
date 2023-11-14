@@ -1,11 +1,11 @@
 using System.Globalization;
-using System.Reflection;
 using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
 using GothmogBot;
 using GothmogBot.Discord;
 using GothmogBot.Services;
+using GothmogBot.Stratz;
 using Serilog;
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -23,8 +23,20 @@ builder.Services
 	.Bind(configuration.GetSection(DiscordOptions.SectionName))
 	.Validate(o => !string.IsNullOrEmpty(o.DiscordApiToken), "DiscordApiToken must have a value.");
 
+builder.Services
+	.AddOptions<StratzOptions>()
+	.Bind(configuration.GetSection(StratzOptions.SectionName))
+	.Validate(o => !string.IsNullOrEmpty(o.StratzApiToken), "StratzApiToken must have a value.");
+
+var stratzOptions = configuration
+	.GetSection(StratzOptions.SectionName)
+	.Get<StratzOptions>() ?? throw new InvalidOperationException("No StratzOptions provided.");
+
 // Add HttpClient
 builder.Services.AddHttpClient();
+
+// Add Stratz GraphQL Client
+builder.Services.AddStratzGraphQLClient(stratzOptions.StratzApiToken);
 
 // Add serilog
 builder.Host.UseSerilog();
@@ -45,6 +57,7 @@ builder.Services.AddSingleton<IDiscordClientRunner, DiscordClientRunner>();
 builder.Services.AddSingleton<UsersService>();
 builder.Services.AddSingleton<InteractionService>(services => new InteractionService(services.GetRequiredService<DiscordSocketClient>()));
 builder.Services.AddSingleton<InteractionHandler>();
+builder.Services.AddSingleton<DotaService>();
 
 // Build and run app
 var app = builder.Build();

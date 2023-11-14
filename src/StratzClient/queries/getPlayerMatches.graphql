@@ -1,0 +1,13 @@
+﻿query GetPlayerMatches($steamAccountId: Long!) {
+	player(steamAccountId: $steamAccountId) {
+		matches(request: { take: 10 }) {
+			id
+			players {
+				steamAccountId
+				steamAccount {
+					name
+				}
+			}
+		}
+	}
+}
