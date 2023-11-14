@@ -31,17 +31,17 @@ public sealed class DiscordClientRunner : IDiscordClientRunner
 
 		Log.Information("Discord Socket Client started");
 
-		await discordSocketClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
-		await discordSocketClient.StartAsync();
+		await discordSocketClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken).ConfigureAwait(false);
+		await discordSocketClient.StartAsync().ConfigureAwait(false);
 
 		discordRestClient.Log += DiscordLogger.LogAsync;
 
 		Log.Information("Discord Rest Client started");
 
-		await discordRestClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
+		await discordRestClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken).ConfigureAwait(false);
 
-		await interactionHandler.InitializeAsync();
+		await interactionHandler.InitializeAsync().ConfigureAwait(false);
 
-		await Task.Delay(Timeout.Infinite);
+		await Task.Delay(Timeout.Infinite).ConfigureAwait(false);
 	}
 }

@@ -21,6 +21,6 @@ public static class DiscordLogger
 
 		Log.Write(severity, message.Exception, "[{Source}] {Message}", message.Source, message.Message);
 
-		await Task.CompletedTask;
+		await Task.CompletedTask.ConfigureAwait(false);
 	}
 }

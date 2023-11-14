@@ -22,11 +22,11 @@ public class UsersService
 
 	public async Task GetUsersAsync()
 	{
-		await restClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken);
-		var guild = await restClient.GetGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId, RequestOptions.Default);
+		await restClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken).ConfigureAwait(false);
+		var guild = await restClient.GetGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId, RequestOptions.Default).ConfigureAwait(false);
 
 		var users = ImmutableList.CreateBuilder<RestGuildUser>();
-		await foreach (var userCollection in guild.GetUsersAsync())
+		await foreach (var userCollection in guild.GetUsersAsync().ConfigureAwait(false))
 		{
 			foreach (var user in userCollection)
 			{

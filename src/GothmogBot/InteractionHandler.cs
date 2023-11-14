@@ -29,7 +29,7 @@ public sealed class InteractionHandler
 		handler.Log += DiscordLogger.LogAsync;
 
 		// Add the public modules that inherit InteractionModuleBase<T> to the InteractionService
-		await handler.AddModulesAsync(Assembly.GetEntryAssembly(), services);
+		await handler.AddModulesAsync(Assembly.GetEntryAssembly(), services).ConfigureAwait(false);
 
 	// Process the InteractionCreated payloads to execute Interactions commands
 		client.InteractionCreated += HandleInteraction;
@@ -39,8 +39,8 @@ public sealed class InteractionHandler
 
 	private async Task ReadyAsync()
 	{
-		await handler.RemoveModulesFromGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId);
-		await handler.RegisterCommandsToGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId);
+		await handler.RemoveModulesFromGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false);
+		await handler.RegisterCommandsToGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false);
 	}
 
 	private async Task HandleInteraction(SocketInteraction interaction)
@@ -51,7 +51,7 @@ public sealed class InteractionHandler
 			var context = new SocketInteractionContext(client, interaction);
 
 			// Execute the incoming command.
-			var result = await handler.ExecuteCommandAsync(context, services);
+			var result = await handler.ExecuteCommandAsync(context, services).ConfigureAwait(false);
 
 			if (!result.IsSuccess)
 				switch (result.Error)
@@ -68,7 +68,11 @@ public sealed class InteractionHandler
 			// If Slash Command execution fails it is most likely that the original interaction acknowledgement will persist. It is a good idea to delete the original
 			// response, or at least let the user know that something went wrong during the command execution.
 			if (interaction.Type is InteractionType.ApplicationCommand)
-				await interaction.GetOriginalResponseAsync().ContinueWith(async (msg) => await msg.Result.DeleteAsync());
+#pragma warning disable CA2008
+#pragma warning disable CA1849
+				await interaction.GetOriginalResponseAsync().ContinueWith(async (msg) => await msg.Result.DeleteAsync().ConfigureAwait(false)).ConfigureAwait(false);
+#pragma warning restore CA1849
+#pragma warning restore CA2008
 		}
 	}
 }
