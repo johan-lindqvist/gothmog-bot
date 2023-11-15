@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
 using GothmogBot;
+using GothmogBot.Database;
 using GothmogBot.Discord;
 using GothmogBot.Services;
 using GothmogBot.Stratz;

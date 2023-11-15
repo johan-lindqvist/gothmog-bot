@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Discord;
 using Discord.Rest;
+using GothmogBot.Database;
 using GothmogBot.Discord;
 using Microsoft.Extensions.Options;
 using Serilog;

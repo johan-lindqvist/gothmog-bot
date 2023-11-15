@@ -2,11 +2,10 @@
 	player(steamAccountId: $steamAccountId) {
 		matches(request: { take: 10 }) {
 			id
+			startDateTime
+			endDateTime
 			players {
 				steamAccountId
-				steamAccount {
-					name
-				}
 			}
 		}
 	}
