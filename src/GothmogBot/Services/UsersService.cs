@@ -1,8 +1,9 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Discord;
 using Discord.Rest;
 using GothmogBot.Database;
 using GothmogBot.Discord;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Serilog;
 
@@ -21,7 +22,7 @@ public class UsersService
 		this.discordOptions = discordOptions;
 	}
 
-	public async Task GetUsersAsync()
+	public async Task<ImmutableList<RestGuildUser>> GetUsersAsync()
 	{
 		await restClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken).ConfigureAwait(false);
 		var guild = await restClient.GetGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId, RequestOptions.Default).ConfigureAwait(false);
@@ -40,5 +41,7 @@ public class UsersService
 				users.Add(user);
 			}
 		}
+
+		return users.ToImmutable();
 	}
 }
