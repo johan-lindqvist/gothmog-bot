@@ -1,5 +1,8 @@
 {
   "DiscordOptions": {
     "DiscordApiToken": "<Discord API Token>"
+  },
+  "StratzOptions": {
+    "StratzApiToken": "<Stratz API Token>"
   }
 }
