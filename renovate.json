@@ -32,6 +32,11 @@
       "groupName": "HotChocolate packages",
       "automerge": false,
       "platformAutomerge": false
+    },
+    {
+      "matchPackageNames": ["Moq"],
+      "allowedVersions": "<4.18.5",
+      "automerge": false
     }
   ],
   "labels": ["dependencies"],
