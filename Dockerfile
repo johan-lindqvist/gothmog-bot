@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/runtime:7.0 AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps
 
 WORKDIR /bot
 COPY ./output ./
