@@ -31,7 +31,7 @@ public sealed class InteractionHandler
 		// Add the public modules that inherit InteractionModuleBase<T> to the InteractionService
 		await handler.AddModulesAsync(Assembly.GetEntryAssembly(), services).ConfigureAwait(false);
 
-	// Process the InteractionCreated payloads to execute Interactions commands
+		// Process the InteractionCreated payloads to execute Interactions commands
 		client.InteractionCreated += HandleInteraction;
 
 		Log.Information("Interaction handler initialized");
@@ -39,10 +39,10 @@ public sealed class InteractionHandler
 
 	private async Task ReadyAsync()
 	{
-		var removeTask = Task.Run(async () => await handler.RemoveModulesFromGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false));
+		Log.Information("Adding commands");
 		var registerTask = Task.Run(async () => await handler.RegisterCommandsToGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false));
-
-		await Task.WhenAll(removeTask, registerTask).ConfigureAwait(false);
+		var guildCommands = await registerTask.ConfigureAwait(false);
+		Log.Information("Finished adding {GuildCommandCount} commands", guildCommands.Count);
 	}
 
 	private async Task HandleInteraction(SocketInteraction interaction)

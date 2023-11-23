@@ -107,4 +107,4 @@ var discordRunner = app.Services.GetRequiredService<IDiscordClientRunner>();
 var appRunTask = app.RunAsync();
 var discordRunnerTask = discordRunner.RunAsync();
 
-await Task.WhenAll(discordRunnerTask, appRunTask).ConfigureAwait(false);
+await Task.WhenAny(discordRunnerTask, appRunTask).ConfigureAwait(false);

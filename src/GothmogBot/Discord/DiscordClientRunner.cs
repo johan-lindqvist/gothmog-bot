@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Options;
 using Serilog;
 
@@ -37,5 +38,7 @@ public sealed class DiscordClientRunner : IDiscordClientRunner
 		await discordRestClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken).ConfigureAwait(false);
 
 		await interactionHandler.InitializeAsync().ConfigureAwait(false);
+
+		await Task.Delay(Timeout.InfiniteTimeSpan).ConfigureAwait(false);
 	}
 }
