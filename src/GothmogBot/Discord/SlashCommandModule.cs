@@ -1,5 +1,7 @@
 
 
+using System.Collections.Immutable;
+using System.Globalization;
 using Discord.Interactions;
 using Discord.WebSocket;
 using GothmogBot.Services;
@@ -39,22 +41,27 @@ public sealed class SlashCommandModule : InteractionModuleBase<SocketInteraction
 		// TODO: add correct url
 		await RespondAsync("[Click here](http://localhost:5001/pair) to pair.").ConfigureAwait(false);
 	}
-	
+
 	[SlashCommand("rorder", "Generate a random order")]
 	private async Task RandomOrder(string prefix = "", string choices = "AdmiralBulldog Jitizm Sepitys Philaeux")
 	{
-		string realPrefix = prefix;
-		if (realPrefix.Length == 0)
+		if (string.IsNullOrWhiteSpace(choices))
 		{
-			TimeZoneInfo cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-			DateTime currentTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cetTimeZone);
-			realPrefix = currentTime.ToString("HH:mm:ss");
+			await RespondAsync($"Invalid value for parameter {nameof(choices)}").ConfigureAwait(false);
+			return;
+		}
+		var choicesList = choices.Trim().Split(' ').Where(c => !string.IsNullOrWhiteSpace(c)).ToImmutableArray();
+
+		if (string.IsNullOrWhiteSpace(prefix))
+		{
+			prefix = DateTime.Now.ToString("T", CultureInfo.CurrentCulture);
 		}
 
-		string[] words = choices.Split(' ');
-		Random random = new Random();
-		words = words.OrderBy(w => random.Next()).ToArray();
+		var random = new Random();
+#pragma warning disable CA5394
+		var words = choicesList.OrderBy(_ => random.Next()).ToImmutableArray();
+#pragma warning restore CA5394
 
-		await RespondAsync(realPrefix + " - " + string.Join(" ", words)).ConfigureAwait(false);
+		await RespondAsync($"[{prefix}] {string.Join(" -> ", words)}").ConfigureAwait(false);
 	}
 }
