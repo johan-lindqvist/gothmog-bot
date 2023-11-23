@@ -5,8 +5,11 @@ using Discord.WebSocket;
 using GothmogBot;
 using GothmogBot.Database;
 using GothmogBot.Discord;
+using GothmogBot.Jobs;
 using GothmogBot.Services;
 using GothmogBot.Stratz;
+using Quartz;
+using Quartz.Impl.Matchers;
 using Serilog;
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -48,6 +51,83 @@ var loggerConfiguration = new LoggerConfiguration()
 	.Enrich.FromLogContext();
 
 Log.Logger = loggerConfiguration.CreateLogger();
+
+// Add Quartz
+builder.Services.AddQuartz((q) =>
+{
+	// TODO configure persistent jobs
+
+	var fetchMatchesJobKey = new JobKey("fetch matches");
+
+	var fetchMatchesJobDataMap = new JobDataMap
+	{
+		{
+			"steamId",
+			StratzConstants.BulldogSteamId
+		}
+	};
+
+	q.AddJob<FetchMatchesJob>(fetchMatchesJobKey, j => j
+		.StoreDurably()
+		.WithDescription("fetch dota matches")
+		.SetJobData(fetchMatchesJobDataMap)
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("fetch matches trigger")
+		.ForJob(fetchMatchesJobKey)
+		.StartNow()
+		.WithSimpleSchedule(x => x
+			// TODO read this from config?
+			.WithIntervalInMinutes(30)
+			.RepeatForever()
+		).WithDescription("fetch dota matches trigger")
+	);
+
+	var fetchMatchesListener = new FetchMatchesListener((r) =>
+	{
+		// TODO update steam nicknames
+		Console.WriteLine(r.ToString());
+	});
+
+	q.AddJobListener(
+		fetchMatchesListener,
+		NameMatcher<JobKey>.NameEquals(fetchMatchesJobKey.Name)
+	);
+
+	var fetchDiscordUsersJobKey = new JobKey("fetch discord users");
+
+	q.AddJob<FetchDiscordUsersJob>(fetchDiscordUsersJobKey, j => j
+		.StoreDurably()
+		.WithDescription("fetch discord users")
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("fetch discord users trigger")
+		.ForJob(fetchDiscordUsersJobKey)
+		.StartNow()
+		.WithSimpleSchedule(x => x
+		  // TODO read this from config?
+			//.WithIntervalInSeconds(5)
+			//.WithIntervalInMinutes(30)
+			.WithIntervalInHours(24)
+			.RepeatForever()
+		).WithDescription("fetch discord users trigger")
+	);
+
+	var fetchDiscordUsersListener = new FetchDiscordUsersListener((r) =>
+	{
+		// TODO kill unsubscribers
+		Console.WriteLine(r.ToString());
+	});
+
+	q.AddJobListener(
+		fetchDiscordUsersListener,
+		NameMatcher<JobKey>.NameEquals(fetchDiscordUsersJobKey.Name)
+	);
+});
+
+builder.Services.AddQuartzHostedService();
 
 // Add Discord Services
 builder.Services.AddSingleton<DiscordSocketClient>();
