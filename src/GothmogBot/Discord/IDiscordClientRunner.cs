@@ -1,7 +1,4 @@
-﻿using Discord.Rest;
-using Discord.WebSocket;
-
-namespace GothmogBot.Discord;
+﻿namespace GothmogBot.Discord;
 
 public interface IDiscordClientRunner
 {

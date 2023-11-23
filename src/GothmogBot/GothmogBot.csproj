@@ -39,4 +39,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\StratzClient\StratzClient.csproj" />
 	</ItemGroup>
+
 </Project>

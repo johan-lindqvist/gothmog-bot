@@ -28,20 +28,14 @@ public sealed class DiscordClientRunner : IDiscordClientRunner
 	public async Task RunAsync()
 	{
 		discordSocketClient.Log += DiscordLogger.LogAsync;
-
 		Log.Information("Discord Socket Client started");
-
 		await discordSocketClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken).ConfigureAwait(false);
 		await discordSocketClient.StartAsync().ConfigureAwait(false);
 
 		discordRestClient.Log += DiscordLogger.LogAsync;
-
 		Log.Information("Discord Rest Client started");
-
 		await discordRestClient.LoginAsync(TokenType.Bot, discordOptions.Value.DiscordApiToken).ConfigureAwait(false);
 
 		await interactionHandler.InitializeAsync().ConfigureAwait(false);
-
-		await Task.Delay(Timeout.Infinite).ConfigureAwait(false);
 	}
 }

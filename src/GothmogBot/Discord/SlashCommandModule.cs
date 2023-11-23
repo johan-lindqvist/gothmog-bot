@@ -3,7 +3,6 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using GothmogBot.Services;
-using Serilog;
 
 namespace GothmogBot.Discord;
 
@@ -32,5 +31,12 @@ public sealed class SlashCommandModule : InteractionModuleBase<SocketInteraction
 		await dotaService.GetDotaMatchAsync(CancellationToken.None).ConfigureAwait(false);
 
 		await RespondAsync("Fake fetch done").ConfigureAwait(false);
+	}
+
+	[SlashCommand("add-me", "Use this to add Bulldog to your friends list")]
+	private async Task AddMe()
+	{
+		// TODO: add correct url
+		await RespondAsync("[Click here](http://localhost:5001/pair) to pair.").ConfigureAwait(false);
 	}
 }

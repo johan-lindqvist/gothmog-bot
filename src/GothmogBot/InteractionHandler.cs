@@ -39,8 +39,10 @@ public sealed class InteractionHandler
 
 	private async Task ReadyAsync()
 	{
-		await handler.RemoveModulesFromGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false);
-		await handler.RegisterCommandsToGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false);
+		var removeTask = Task.Run(async () => await handler.RemoveModulesFromGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false));
+		var registerTask = Task.Run(async () => await handler.RegisterCommandsToGuildAsync(DiscordConstants.BulldogsKappaClubDiscordGuildId).ConfigureAwait(false));
+
+		await Task.WhenAll(removeTask, registerTask).ConfigureAwait(false);
 	}
 
 	private async Task HandleInteraction(SocketInteraction interaction)
