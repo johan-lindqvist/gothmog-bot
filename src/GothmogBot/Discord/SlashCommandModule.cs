@@ -39,4 +39,22 @@ public sealed class SlashCommandModule : InteractionModuleBase<SocketInteraction
 		// TODO: add correct url
 		await RespondAsync("[Click here](http://localhost:5001/pair) to pair.").ConfigureAwait(false);
 	}
+	
+	[SlashCommand("rorder", "Generate a random order")]
+	private async Task RandomOrder(string prefix = "", string choices = "AdmiralBulldog Jitizm Sepitys Philaeux")
+	{
+		string realPrefix = prefix;
+		if (realPrefix.Length == 0)
+		{
+			TimeZoneInfo cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+			DateTime currentTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cetTimeZone);
+			realPrefix = currentTime.ToString("HH:mm:ss");
+		}
+
+		string[] words = choices.Split(' ');
+		Random random = new Random();
+		words = words.OrderBy(w => random.Next()).ToArray();
+
+		await RespondAsync(realPrefix + " - " + string.Join(" ", words)).ConfigureAwait(false);
+	}
 }
