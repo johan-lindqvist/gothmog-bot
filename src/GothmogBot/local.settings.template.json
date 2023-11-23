@@ -4,5 +4,10 @@
   },
   "StratzOptions": {
     "StratzApiToken": "<Stratz API Token>"
+  },
+  "DiscordOAuthOptions": {
+    "ClientId": "<Discord OAuth Client Id>",
+    "ClientSecret": "<Discord OAuth Client Secret>",
+    "RedirectUrl": "<Discord OAuth Client Redirect URL>"
   }
 }
