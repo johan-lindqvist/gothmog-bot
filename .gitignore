@@ -265,5 +265,7 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Local settings
+# Local dev settings
 local.settings.json
+# Prod settings
+local.settings.prod.json
