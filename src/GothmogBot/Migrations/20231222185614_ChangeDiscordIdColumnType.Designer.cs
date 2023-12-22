@@ -3,6 +3,7 @@ using System;
 using GothmogBot.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GothmogBot.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231222185614_ChangeDiscordIdColumnType")]
+    partial class ChangeDiscordIdColumnType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.14");
@@ -38,9 +41,6 @@ namespace GothmogBot.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("DailyPoints")
-                        .HasColumnType("INTEGER");
-
                     b.Property<ulong>("DiscordId")
                         .HasColumnType("INTEGER");
 
@@ -48,13 +48,7 @@ namespace GothmogBot.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("HourlyPoints")
-                        .HasColumnType("INTEGER");
-
                     b.Property<long>("Points")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("WeeklyPoints")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
