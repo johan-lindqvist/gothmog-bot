@@ -18,5 +18,7 @@ public class ApplicationDbContext : DbContext
 
 	public DbSet<DotaMatch> DotaMatches { get; set; } = null!;
 
+	public DbSet<DiscordUser> DiscordUsers { get; set; } = null;
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlite($"Data Source={dbPath}");
 }
