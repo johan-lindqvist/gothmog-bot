@@ -14,16 +14,20 @@ public sealed class DiscordClientRunner : IDiscordClientRunner
 	private readonly InteractionHandler interactionHandler;
 	private readonly IOptions<DiscordOptions> discordOptions;
 
+	private readonly TextMessageHandler textMessageHandler;
+
 	public DiscordClientRunner(
 		DiscordSocketClient discordSocketClient,
 		DiscordRestClient discordRestClient,
 		InteractionHandler interactionHandler,
-		IOptions<DiscordOptions> discordOptions)
+		IOptions<DiscordOptions> discordOptions,
+		TextMessageHandler textMessageHandler)
 	{
 		this.discordSocketClient = discordSocketClient;
 		this.discordRestClient = discordRestClient;
 		this.interactionHandler = interactionHandler;
 		this.discordOptions = discordOptions;
+		this.textMessageHandler = textMessageHandler;
 	}
 
 	public async Task RunAsync()
@@ -39,6 +43,8 @@ public sealed class DiscordClientRunner : IDiscordClientRunner
 
 		await interactionHandler.InitializeAsync().ConfigureAwait(false);
 
+		await textMessageHandler.InitializeAsync().ConfigureAwait(false);
+		
 		await Task.Delay(Timeout.InfiniteTimeSpan).ConfigureAwait(false);
 	}
 }
