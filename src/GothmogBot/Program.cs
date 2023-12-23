@@ -6,11 +6,14 @@ using Discord.Rest;
 using Discord.WebSocket;
 using GothmogBot;
 using GothmogBot.Discord;
+using GothmogBot.Jobs;
+using GothmogBot.Jobs.ResetPointLimits;
 using GothmogBot.Pairing;
 using GothmogBot.Pairing.OAuth;
 using GothmogBot.Services;
 using GothmogBot.Stratz;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
 using Serilog;
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -92,6 +95,41 @@ builder.Services.AddSingleton<InteractionHandler>();
 builder.Services.AddSingleton<DotaService>();
 builder.Services.AddSingleton<DiscordOAuthService>();
 builder.Services.AddSingleton<PairingService>();
+
+
+// Add Quartz
+builder.Services.AddQuartz((q) =>
+{
+	var resetPointLimitsJobKey = new JobKey("reset point limits");
+
+	q.AddJob<ResetPointLimitsJob>(resetPointLimitsJobKey, j => j
+		.StoreDurably()
+		.WithDescription("reset point limits")
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("reset point limits hourly trigger")
+		.ForJob(resetPointLimitsJobKey)
+		.WithCronSchedule("0 0 * ? * *")
+		.UsingJobData(new JobDataMap { { "ResetPointLimitsType", ResetPointLimitsJob.Type.Hourly } })
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("reset point limits daily trigger")
+		.ForJob(resetPointLimitsJobKey)
+		.WithCronSchedule("0 0 0 * * ?")
+		.UsingJobData(new JobDataMap { { "ResetPointLimitsType", ResetPointLimitsJob.Type.Daily } })
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("reset point limits weekly trigger")
+		.ForJob(resetPointLimitsJobKey)
+		.WithCronSchedule("0 0 0 ? * MON")
+		.UsingJobData(new JobDataMap { { "ResetPointLimitsType", ResetPointLimitsJob.Type.Weekly } })
+	);
+});
+
+builder.Services.AddQuartzHostedService();
 
 // Build and run app
 var app = builder.Build();
