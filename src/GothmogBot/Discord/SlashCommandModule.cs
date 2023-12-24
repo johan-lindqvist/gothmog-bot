@@ -2,9 +2,12 @@
 
 using System.Collections.Immutable;
 using System.Globalization;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using GothmogBot.Database;
 using GothmogBot.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace GothmogBot.Discord;
 
@@ -63,5 +66,149 @@ public sealed class SlashCommandModule : InteractionModuleBase<SocketInteraction
 #pragma warning restore CA5394
 
 		await RespondAsync($"[{prefix}] {string.Join(" -> ", words)}").ConfigureAwait(false);
+	}
+
+	[SlashCommand("points", "Get current points")]
+	private async Task GetPoints()
+	{
+		using var db = new ApplicationDbContext();
+
+		var discordUser = Context.User;
+
+		var user = await db.DiscordUsers.FirstOrDefaultAsync(u => u.DiscordId == discordUser.Id).ConfigureAwait(false);
+
+		if (user == null)
+		{
+			var guildUser = Context.Guild.GetUser(discordUser.Id);
+			if (guildUser == null)
+			{
+				await RespondAsync($"Invalid value for parameter {nameof(user)}").ConfigureAwait(false);
+				return;
+			}
+
+			user = new DiscordUser
+			{
+				DiscordId = discordUser.Id,
+				DiscordUsername = guildUser.Username,
+				Points = 0,
+			};
+
+			db.Add(user);
+		}
+
+		await RespondAsync($"{user.Points}").ConfigureAwait(false);
+	}
+
+	[SlashCommand("set-points", "Set points for a user")]
+	[RequireRole(roleId: DiscordConstants.DiscordModsRoleId, Group = "Permission")]
+	private async Task SetPoints(IUser discordUser, long points)
+	{
+		using var db = new ApplicationDbContext();
+
+		var user = await db.DiscordUsers.FirstOrDefaultAsync(u => u.DiscordId == discordUser.Id).ConfigureAwait(false);
+
+		if (user == null)
+		{
+			var guildUser = Context.Guild.GetUser(discordUser.Id);
+			if (guildUser == null)
+			{
+				await RespondAsync($"Invalid value for parameter {nameof(user)}").ConfigureAwait(false);
+				return;
+			}
+
+			user = new DiscordUser
+			{
+				DiscordId = discordUser.Id,
+				DiscordUsername = guildUser.Username,
+				Points = 0,
+			};
+
+			db.Add(user);
+		}
+
+		user.Points = points;
+
+		// TODO handle exceptions
+		await db.SaveChangesAsync().ConfigureAwait(false);
+
+		await UpdateRoles(discordUser.Id, user.Points).ConfigureAwait(false);
+
+		await RespondAsync(
+			$"Updated points for '{Context.User.GlobalName}' successfully ({user.Points} points)."
+		).ConfigureAwait(false);
+	}
+
+	[SlashCommand("add-points", "Add/subtract points for a user")]
+	[RequireRole(roleId: DiscordConstants.DiscordModsRoleId, Group = "Permission")]
+	private async Task AddPoints(IUser discordUser, long amount)
+	{
+		using var db = new ApplicationDbContext();
+
+		var user = await db.DiscordUsers.FirstOrDefaultAsync(u => u.DiscordId == discordUser.Id).ConfigureAwait(false);
+
+		if (user == null)
+		{
+			var guildUser = Context.Guild.GetUser(discordUser.Id);
+			if (guildUser == null)
+			{
+				await RespondAsync($"Invalid value for parameter {nameof(discordUser)}").ConfigureAwait(false);
+				return;
+			}
+
+			user = new DiscordUser
+			{
+				DiscordId = discordUser.Id,
+				DiscordUsername = guildUser.Username,
+				Points = 0,
+			};
+
+			db.Add(user);
+		}
+
+		user.Points += amount;
+
+		// TODO handle exceptions
+		await db.SaveChangesAsync().ConfigureAwait(false);
+
+		await UpdateRoles(discordUser.Id, user.Points).ConfigureAwait(false);
+
+		await RespondAsync(
+			$"Updated points for '{Context.User.GlobalName}' successfully ({user.Points} points)."
+		).ConfigureAwait(false);
+	}
+
+	private async Task UpdateRoles(ulong userId, long currentPoints)
+	{
+		var guildUser = Context.Guild.GetUser(userId);
+
+		// TODO read from env
+		if (currentPoints >= 5000 && currentPoints < 20000)
+		{
+			await guildUser
+				.AddRoleAsync(DiscordConstants.RegularRoleId)
+				.ConfigureAwait(false);
+		}
+		else if (currentPoints == 20000 && currentPoints < 80000)
+		{
+			await guildUser
+				.AddRoleAsync(DiscordConstants.DankRoleId)
+				.ConfigureAwait(false);
+		}
+		else if (currentPoints >= 80000)
+		{
+			await guildUser
+				.AddRoleAsync(DiscordConstants.BasedRoleId)
+				.ConfigureAwait(false);
+		}
+		else
+		{
+			await guildUser.RemoveRolesAsync(
+				new ulong[] {
+					DiscordConstants.RegularRoleId,
+					DiscordConstants.DankRoleId,
+					DiscordConstants.BasedRoleId
+				}
+			).ConfigureAwait(false);
+		}
 	}
 }

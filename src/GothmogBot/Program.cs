@@ -1,15 +1,19 @@
 using System.Globalization;
 using Discord;
+using Discord.Commands;
 using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
 using GothmogBot;
 using GothmogBot.Discord;
+using GothmogBot.Jobs;
+using GothmogBot.Jobs.ResetPointLimits;
 using GothmogBot.Pairing;
 using GothmogBot.Pairing.OAuth;
 using GothmogBot.Services;
 using GothmogBot.Stratz;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
 using Serilog;
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -37,7 +41,7 @@ builder.Services
 	.Bind(configuration.GetSection(DiscordOAuthOptions.SectionName))
 	.Validate(o => !string.IsNullOrEmpty(o.ClientId), "ClientId must have a value.")
 	.Validate(o => !string.IsNullOrEmpty(o.ClientSecret), "ClientSecret must have a value.")
-	.Validate(o =>  !string.IsNullOrEmpty(o.RedirectUrl), "RedirectUrl must have a value.");
+	.Validate(o => !string.IsNullOrEmpty(o.RedirectUrl), "RedirectUrl must have a value.");
 
 var stratzOptions = configuration
 	.GetSection(StratzOptions.SectionName)
@@ -66,7 +70,17 @@ Log.Logger = loggerConfiguration.CreateLogger();
 
 // Add Discord Services
 #pragma warning disable CA2000
-builder.Services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig { GatewayIntents = GatewayIntents.None }));
+builder.Services.AddSingleton(
+	new DiscordSocketClient(
+		new DiscordSocketConfig
+		{
+			GatewayIntents = GatewayIntents.GuildMessages
+			| GatewayIntents.MessageContent
+			| GatewayIntents.GuildMembers
+			| GatewayIntents.Guilds
+		}
+		)
+	);
 #pragma warning restore CA2000
 builder.Services.AddTransient<DiscordRestClient>();
 
@@ -75,10 +89,47 @@ builder.Services.AddTransient<DiscordRestClient>();
 // Add local services
 builder.Services.AddSingleton<IDiscordClientRunner, DiscordClientRunner>();
 builder.Services.AddSingleton<InteractionService>(services => new InteractionService(services.GetRequiredService<DiscordSocketClient>()));
+builder.Services.AddSingleton<TextMessageHandler>();
+builder.Services.AddSingleton<CommandService>();
 builder.Services.AddSingleton<InteractionHandler>();
 builder.Services.AddSingleton<DotaService>();
 builder.Services.AddSingleton<DiscordOAuthService>();
 builder.Services.AddSingleton<PairingService>();
+
+
+// Add Quartz
+builder.Services.AddQuartz((q) =>
+{
+	var resetPointLimitsJobKey = new JobKey("reset point limits");
+
+	q.AddJob<ResetPointLimitsJob>(resetPointLimitsJobKey, j => j
+		.StoreDurably()
+		.WithDescription("reset point limits")
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("reset point limits hourly trigger")
+		.ForJob(resetPointLimitsJobKey)
+		.WithCronSchedule("0 0 * ? * *")
+		.UsingJobData(new JobDataMap { { "ResetPointLimitsType", ResetPointLimitsJob.Type.Hourly } })
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("reset point limits daily trigger")
+		.ForJob(resetPointLimitsJobKey)
+		.WithCronSchedule("0 0 0 * * ?")
+		.UsingJobData(new JobDataMap { { "ResetPointLimitsType", ResetPointLimitsJob.Type.Daily } })
+	);
+
+	q.AddTrigger(t => t
+		.WithIdentity("reset point limits weekly trigger")
+		.ForJob(resetPointLimitsJobKey)
+		.WithCronSchedule("0 0 0 ? * MON")
+		.UsingJobData(new JobDataMap { { "ResetPointLimitsType", ResetPointLimitsJob.Type.Weekly } })
+	);
+});
+
+builder.Services.AddQuartzHostedService();
 
 // Build and run app
 var app = builder.Build();
