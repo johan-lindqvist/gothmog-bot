@@ -7,7 +7,7 @@
     "node_modules"
   ],
   "devDependencies": {
-    "prettier": "3.2.0"
+    "prettier": "3.2.1"
   },
   "license": "",
   "name": "gothmog-bot",
