@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Discord.Net" Version="3.14.1" />
+		<PackageReference Include="Discord.Net" Version="3.15.0" />
 		<PackageReference Include="Discord.Net.Rest" Version="3.14.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
